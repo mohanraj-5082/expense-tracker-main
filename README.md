@@ -1,92 +1,155 @@
-# ExpenseIQ — MERN Expense Tracker
+# 💳 ExpenseIQ — MERN Expense Tracker
 
-A full-stack Expense Tracker built with **MongoDB + Express.js + React + Node.js (MERN)**
+![MERN Stack](https://img.shields.io/badge/MERN-Stack-blue?style=for-the-badge&logo=mongodb)
+![React](https://img.shields.io/badge/React-18-blue?style=for-the-badge&logo=react)
+![Node.js](https://img.shields.io/badge/Node.js-18+-green?style=for-the-badge&logo=nodedotjs)
+![Express.js](https://img.shields.io/badge/Express.js-Framework-lightgrey?style=for-the-badge&logo=express)
+![MongoDB](https://img.shields.io/badge/MongoDB-Database-success?style=for-the-badge&logo=mongodb)
+![Vite](https://img.shields.io/badge/Vite-Bundler-purple?style=for-the-badge&logo=vite)
 
-## 📁 Project Structure
+A sleek, full-stack Expense Tracker application developed using the **MERN** stack (MongoDB, Express.js, React, Node.js). ExpenseIQ helps you seamlessly track your income and expenses, offering insightful visualizations and a premium dark-themed user interface.
 
-```
-expense-tracker/
-├── backend/     → Express.js REST API
-└── frontend/    → Vite + React SPA
-```
+**🌍 Live Demo:** [https://expense-tracker-main-1-np9f.onrender.com](https://expense-tracker-main-1-np9f.onrender.com)  
+**🔌 Live API:** [https://expense-tracker-main-q41q.onrender.com](https://expense-tracker-main-q41q.onrender.com)
 
-## 🚀 Setup & Run
+---
+
+## ✨ Features
+
+- **🔐 Secure Authentication:** JWT-based user registration and login with protected endpoints.
+- **📊 Interactive Dashboard:** Provides real-time insights with Total Balance, Income, and Expense summary cards.
+- **📈 Data Visualizations:** Beautiful area charts for Income vs. Expense and pie charts for Category breakdowns.
+- **💰 Transaction Management:** Add, delete, and filter transactions instantly.
+- **🎨 Premium UI/UX:** Responsive, modern dark theme built for an excellent user experience with smooth micro-animations.
+- **⚡ Fast & Optimized:** Powered by Vite on the frontend and Express on the backend.
+
+---
+
+## 🛠️ Tech Stack
+
+**Frontend:**
+- React 18
+- Vite
+- Axios (API requests)
+- Tailwind CSS (or Vanilla CSS for styling)
+- Recharts (Data visualization)
+
+**Backend:**
+- Node.js
+- Express.js
+- MongoDB (Mongoose ORM)
+- JSON Web Token (JWT Auth)
+- bcryptjs (Password Hashing)
+
+---
+
+## 🚀 Getting Started
+
+Follow these instructions to set up the project locally on your machine.
 
 ### Prerequisites
-- Node.js v18+
-- MongoDB (local or Atlas)
+- [Node.js](https://nodejs.org/) (v18 or higher)
+- [MongoDB](https://www.mongodb.com/) (Local installation or MongoDB Atlas cluster)
 
-### 1. Backend
+### 1. Clone the Repository
+```bash
+git clone https://github.com/your-username/expense-tracker.git
+cd expense-tracker
+```
+
+### 2. Backend Setup
+Navigate to the backend directory, install dependencies, and run the server.
 
 ```bash
 cd backend
 npm install
 ```
 
-Edit `.env`:
-```
-MONGO_URI=mongodb://localhost:27017/expense_tracker
-JWT_SECRET=your_super_secret_key
+**Environment Variables (`backend/.env`):**
+Create a `.env` file in the `backend` directory and add the following:
+```env
+MONGO_URI=<YOUR_MONGODB_ATLAS_URI>
+JWT_SECRET=your_super_secret_jwt_key
 PORT=5000
-NODE_ENV=development
+NODE_ENV=production
 ```
 
-Start:
+**Start the Backend Server:**
 ```bash
-npm run dev     # development (nodemon)
-npm start       # production
+npm start       # Starts server for production
 ```
+*API is running live at: `https://expense-tracker-main-q41q.onrender.com`*
 
-API runs at: `http://localhost:5000`
-
-### 2. Frontend
+### 3. Frontend Setup
+Open a new terminal, navigate to the frontend directory, install dependencies, and run the app.
 
 ```bash
 cd frontend
 npm install
-npm run dev
+npm run build
+```
+*Application is running live at: `https://expense-tracker-main-1-np9f.onrender.com`*
+
+---
+
+## 🔌 API Reference
+
+### Authentication Endpoints
+| HTTP Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/api/auth/register` | Register a new user |
+| `POST` | `/api/auth/login` | Authenticate & get token |
+| `GET`  | `/api/auth/me` | Get current logged-in user details |
+
+### Transaction Endpoints (Requires Bearer Token)
+| HTTP Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/transactions` | Retrieve all transactions |
+| `POST` | `/api/transactions` | Add a new transaction |
+| `DELETE`| `/api/transactions/:id`| Delete a specific transaction |
+| `GET` | `/api/transactions/summary`| Get balance, total income, and total expense |
+| `GET` | `/api/transactions/monthly`| Retrieve data for monthly charts |
+| `GET` | `/api/transactions/category-stats`| Retrieve data for category breakdown charts |
+
+---
+
+## 📁 Project Structure
+
+```text
+expense-tracker/
+│
+├── backend/                  # Node.js & Express API
+│   ├── controllers/          # Request handlers
+│   ├── models/               # Mongoose schemas
+│   ├── routes/               # API route declarations
+│   ├── middleware/           # Auth and error handling
+│   └── server.js             # Entry point
+│
+└── frontend/                 # React & Vite application
+    ├── src/
+    │   ├── components/       # Reusable UI components
+    │   ├── pages/            # Application views (Dashboard, Login, etc.)
+    │   ├── context/          # React Context (Auth, Global State)
+    │   └── App.jsx           # Main React component
+    └── index.html
 ```
 
-App runs at: `http://localhost:5173`
-
 ---
-
-## 🔌 API Endpoints
-
-### Auth
-| Method | Route | Description |
-|--------|-------|-------------|
-| POST | `/api/auth/register` | Register new user |
-| POST | `/api/auth/login` | Login |
-| GET  | `/api/auth/me` | Get current user |
-
-### Transactions (all require Bearer token)
-| Method | Route | Description |
-|--------|-------|-------------|
-| GET | `/api/transactions` | List all transactions |
-| POST | `/api/transactions` | Create transaction |
-| DELETE | `/api/transactions/:id` | Delete transaction |
-| GET | `/api/transactions/summary` | Balance/Income/Expense totals |
-| GET | `/api/transactions/monthly` | Monthly chart data |
-| GET | `/api/transactions/category-stats` | Category breakdown |
-
----
-
-## ✨ Features
-
-- **JWT Authentication** — Register, login, protected routes
-- **Dashboard** — Total Balance, Income, Expense stat cards
-- **Charts** — Income vs Expense area chart + Category pie chart
-- **Transactions** — Add, filter by type/category, delete
-- **Dark Theme** — Premium dark UI with animations
 
 ## 🚢 Deployment
 
-| Layer | Platform |
-|-------|----------|
-| Frontend | Vercel |
-| Backend | Render |
-| Database | MongoDB Atlas |
+Ready to take your app live? Here is the recommended deployment stack:
 
-### Deploy to MongoDB Atlas
-Replace `MONGO_URI` in `.env` with your Atlas connection string.
+| Layer      | Recommended Platform |
+| :--------- | :------------------- |
+| **Frontend** | [Vercel](https://vercel.com/) or [Netlify](https://www.netlify.com/) |
+| **Backend**  | [Render](https://render.com/) or [Railway](https://railway.app/) |
+| **Database** | [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) (Cloud Database) |
+
+*Note: Remember to replace the `MONGO_URI` in your production environment variables with your MongoDB Atlas connection string and update the API base URL in the frontend.*
+
+---
+
+## 📄 License
+
+This project is open-source and available under the [MIT License](LICENSE).
