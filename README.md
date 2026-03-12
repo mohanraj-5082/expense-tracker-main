@@ -138,15 +138,15 @@ expense-tracker/
 
 ## 🚢 Deployment
 
-Ready to take your app live? Here is the recommended deployment stack:
+The application is deployed live using the following stack:
 
-| Layer      | Recommended Platform |
-| :--------- | :------------------- |
-| **Frontend** | [Vercel](https://vercel.com/) or [Netlify](https://www.netlify.com/) |
-| **Backend**  | [Render](https://render.com/) or [Railway](https://railway.app/) |
+| Layer      | Platform |
+| :--------- | :------- |
+| **Frontend** | [Render](https://render.com/) |
+| **Backend**  | [Render](https://render.com/) |
 | **Database** | [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) (Cloud Database) |
 
-*Note: Remember to replace the `MONGO_URI` in your production environment variables with your MongoDB Atlas connection string and update the API base URL in the frontend.*
+*Note: The frontend consumes the backend API running at its respective Render URL, and the backend connects to MongoDB Atlas using its connection string.*
 
 ---
 
