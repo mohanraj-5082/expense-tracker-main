@@ -16,6 +16,7 @@ const app = express();
 const allowedOrigins = [
   process.env.CLIENT_URL || "http://localhost:5173",
   "https://expense-tracker-frontend-y81r.onrender.com",
+  "https://expense-tracker-main-1-np9f.onrender.com" // Newly deployed frontend
 ];
 app.use(
   cors({
