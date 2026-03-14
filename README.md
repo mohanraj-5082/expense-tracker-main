@@ -1,12 +1,5 @@
 # 💳 ExpenseIQ — MERN Expense Tracker
 
-![MERN Stack](https://img.shields.io/badge/MERN-Stack-blue?style=for-the-badge&logo=mongodb)
-![React](https://img.shields.io/badge/React-18-blue?style=for-the-badge&logo=react)
-![Node.js](https://img.shields.io/badge/Node.js-18+-green?style=for-the-badge&logo=nodedotjs)
-![Express.js](https://img.shields.io/badge/Express.js-Framework-lightgrey?style=for-the-badge&logo=express)
-![MongoDB](https://img.shields.io/badge/MongoDB-Database-success?style=for-the-badge&logo=mongodb)
-![Vite](https://img.shields.io/badge/Vite-Bundler-purple?style=for-the-badge&logo=vite)
-
 A sleek, full-stack Expense Tracker application developed using the **MERN** stack (MongoDB, Express.js, React, Node.js). ExpenseIQ helps you seamlessly track your income and expenses, offering insightful visualizations and a premium dark-themed user interface.
 
 **🌍 Live Demo:** [https://expense-tracker-main-1-np9f.onrender.com](https://expense-tracker-main-1-np9f.onrender.com)  
