@@ -4,17 +4,27 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Transactions from "./pages/Transactions";
+import AdminDashboard from "./pages/AdminDashboard";
 
-// Protected Route wrapper
+// Route guard: must be logged in
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
   return user ? children : <Navigate to="/login" replace />;
 };
 
-// Public Route (redirect to dashboard if already logged in)
+// Route guard: must be logged in AND have admin role
+const AdminRoute = ({ children }) => {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== "admin") return <Navigate to="/dashboard" replace />;
+  return children;
+};
+
+// Public Route (redirect to appropriate dashboard if already logged in)
 const PublicRoute = ({ children }) => {
   const { user } = useAuth();
-  return !user ? children : <Navigate to="/dashboard" replace />;
+  if (!user) return children;
+  return <Navigate to={user.role === "admin" ? "/admin" : "/dashboard"} replace />;
 };
 
 function App() {
@@ -38,6 +48,7 @@ function App() {
               </PublicRoute>
             }
           />
+          {/* User dashboard */}
           <Route
             path="/dashboard"
             element={
@@ -54,6 +65,16 @@ function App() {
               </ProtectedRoute>
             }
           />
+          {/* Admin dashboard */}
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            }
+          />
+          {/* Fallback */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </AuthProvider>

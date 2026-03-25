@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
       const { data } = await axiosClient.post("/auth/register", { name, email, password });
       setToken(data.data.token);
       setUser(data.data.user);
-      return { success: true };
+      return { success: true, role: data.data.user.role };
     } catch (err) {
       return {
         success: false,
@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
       const { data } = await axiosClient.post("/auth/login", { email, password });
       setToken(data.data.token);
       setUser(data.data.user);
-      return { success: true };
+      return { success: true, role: data.data.user.role };
     } catch (err) {
       return {
         success: false,

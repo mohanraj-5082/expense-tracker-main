@@ -22,7 +22,12 @@ const Login = () => {
     }
     const result = await login(form.email, form.password);
     if (result.success) {
-      navigate("/dashboard");
+      // Role-based redirect
+      if (result.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
     } else {
       setError(result.message);
     }
@@ -48,7 +53,7 @@ const Login = () => {
               className="form-input"
               type="email"
               name="email"
-              placeholder="you@example.com"
+              placeholder="abc@example.com"
               value={form.email}
               onChange={handleChange}
               autoComplete="email"

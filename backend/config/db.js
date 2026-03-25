@@ -1,9 +1,6 @@
 const mongoose = require("mongoose");
+// Use system DNS resolver for SRV lookups (avoid forcing external DNS)
 const dns = require("dns");
-
-// Force Google DNS to resolve MongoDB Atlas SRV records
-// (bypasses ISP/system DNS that doesn't support SRV lookups)
-dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 const connectDB = async () => {
   try {

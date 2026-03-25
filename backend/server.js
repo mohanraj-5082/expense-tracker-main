@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const transactionRoutes = require("./routes/transactionRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 const { errorHandler, notFound } = require("./middleware/errorMiddleware");
 
 // Connect to MongoDB
@@ -14,10 +15,12 @@ const app = express();
 
 // ─── Middleware ───────────────────────────────────────────────
 const allowedOrigins = [
-  process.env.CLIENT_URL || "http://localhost:5173",
+  process.env.CLIENT_URL,
+  "http://localhost:5173",
+  "http://localhost:5175",
   "https://expense-tracker-frontend-y81r.onrender.com",
   "https://expense-tracker-main-1-np9f.onrender.com" // Newly deployed frontend
-];
+].filter(Boolean);
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -39,6 +42,7 @@ if (process.env.NODE_ENV === "development") {
 // ─── Routes ──────────────────────────────────────────────────
 app.use("/api/auth", authRoutes);
 app.use("/api/transactions", transactionRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {

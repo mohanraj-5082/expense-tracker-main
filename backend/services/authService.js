@@ -2,11 +2,24 @@ const User = require("../models/User");
 const generateToken = require("../utils/generateToken");
 
 /**
+ * Normalize email for Gmail (remove dots)
+ */
+const normalizeEmail = (email) => {
+  const [local, domain] = email.toLowerCase().split('@');
+  if (domain === 'gmail.com') {
+    return local.replace(/\./g, '') + '@' + domain;
+  }
+  return email.toLowerCase();
+};
+
+/**
  * Register a new user
  */
 const registerUser = async ({ name, email, password }) => {
+  const normalizedEmail = normalizeEmail(email);
+
   // Check if user already exists
-  const existingUser = await User.findOne({ email });
+  const existingUser = await User.findOne({ email: normalizedEmail });
   if (existingUser) {
     const error = new Error("User with this email already exists");
     error.statusCode = 409;
@@ -14,7 +27,7 @@ const registerUser = async ({ name, email, password }) => {
   }
 
   // Create user (password hashed via pre-save hook in model)
-  const user = await User.create({ name, email, password });
+  const user = await User.create({ name, email: normalizedEmail, password });
 
   const token = generateToken(user._id);
 
@@ -24,6 +37,8 @@ const registerUser = async ({ name, email, password }) => {
       _id: user._id,
       name: user.name,
       email: user.email,
+      role: user.role,
+      verified: user.verified,
       createdAt: user.createdAt,
     },
   };
@@ -33,8 +48,10 @@ const registerUser = async ({ name, email, password }) => {
  * Login an existing user
  */
 const loginUser = async ({ email, password }) => {
+  const normalizedEmail = normalizeEmail(email);
+
   // Find user with password field included
-  const user = await User.findOne({ email }).select("+password");
+  const user = await User.findOne({ email: normalizedEmail }).select("+password");
 
   if (!user) {
     const error = new Error("Invalid email or password");
@@ -57,6 +74,8 @@ const loginUser = async ({ email, password }) => {
       _id: user._id,
       name: user.name,
       email: user.email,
+      role: user.role,
+      verified: user.verified,
       createdAt: user.createdAt,
     },
   };
