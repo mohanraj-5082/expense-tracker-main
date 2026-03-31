@@ -27,7 +27,7 @@ const Dashboard = () => {
       setMonthlyData(monthlyRes.data.data);
       setCategoryData(catRes.data.data);
     } catch (err) {
-      console.error("Dashboard fetch error:", err);
+      if (import.meta.env.MODE !== "production") console.error("Dashboard fetch error:", err);
     } finally {
       setLoading(false);
     }

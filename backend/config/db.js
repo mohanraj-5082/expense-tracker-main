@@ -1,6 +1,4 @@
 const mongoose = require("mongoose");
-// Use system DNS resolver for SRV lookups (avoid forcing external DNS)
-const dns = require("dns");
 
 const connectDB = async () => {
   try {

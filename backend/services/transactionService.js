@@ -14,8 +14,7 @@ const getTransactions = async (userId, filters = {}) => {
     if (filters.endDate) query.date.$lte = new Date(filters.endDate);
   }
 
-  const transactions = await Transaction.find(query).sort({ date: -1 });
-  return transactions;
+  return Transaction.find(query).sort({ date: -1 });
 };
 
 /**
@@ -101,8 +100,7 @@ const getCategoryStats = async (userId, type = "expense") => {
  * Create a new transaction
  */
 const createTransaction = async (userId, data) => {
-  const transaction = await Transaction.create({ userId, ...data });
-  return transaction;
+  return Transaction.create({ userId, ...data });
 };
 
 /**

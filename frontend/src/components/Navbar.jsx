@@ -1,9 +1,5 @@
 import { useAuth } from "../context/AuthContext";
 
-const pageTitles = {
-  "/dashboard": "Dashboard",
-  "/transactions": "Transactions",
-};
 
 const Navbar = ({ title }) => {
   const { user } = useAuth();

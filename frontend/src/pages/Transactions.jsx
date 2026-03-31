@@ -39,7 +39,7 @@ const Transactions = () => {
       const { data } = await axiosClient.get(`/transactions?${params}`);
       setTransactions(data.data);
     } catch (err) {
-      console.error(err);
+      if (import.meta.env.MODE !== "production") console.error(err);
     } finally {
       setLoading(false);
     }
@@ -95,7 +95,7 @@ const Transactions = () => {
       await axiosClient.delete(`/transactions/${id}`);
       fetchTransactions();
     } catch (err) {
-      console.error(err);
+      if (import.meta.env.MODE !== "production") console.error(err);
     }
   };
 
