@@ -2,37 +2,69 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
+// ─── Validation helpers ────────────────────────────────────────────────────
+const validateEmail = (email) => {
+  const trimmed = email.trim();
+  if (!trimmed) return "Email is required";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed))
+    return "Please enter a valid email address (e.g. abc@example.com)";
+  return "";
+};
+
+const validatePassword = (password) => {
+  if (!password) return "Password is required";
+  return "";
+};
+
+// ─── Component ─────────────────────────────────────────────────────────────
 const Login = () => {
   const { login, loading } = useAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({ email: "", password: "" });
-  const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({ email: "", password: "" });
+  const [serverError, setServerError] = useState("");
+
+  // ─── Handlers ─────────────────────────────────────────────────────────
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    setError("");
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+    setFieldErrors((prev) => ({ ...prev, [name]: "" }));
+    setServerError("");
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    let err = "";
+    if (name === "email") err = validateEmail(value);
+    if (name === "password") err = validatePassword(value);
+    setFieldErrors((prev) => ({ ...prev, [name]: err }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.email || !form.password) {
-      setError("Please fill in all fields");
-      return;
+    setServerError("");
+
+    // Run all validations
+    const emailErr = validateEmail(form.email);
+    const passErr = validatePassword(form.password);
+
+    if (emailErr || passErr) {
+      setFieldErrors({ email: emailErr, password: passErr });
+      return; // Prevent submission — valid inputs are preserved
     }
+
     const result = await login(form.email, form.password);
     if (result.success) {
-      // Role-based redirect
-      if (result.role === "admin") {
-        navigate("/admin");
-      } else {
-        navigate("/dashboard");
-      }
+      navigate(result.role === "admin" ? "/admin" : "/dashboard");
     } else {
-      setError(result.message);
+      // Server error (wrong credentials, blocked, etc.) — do NOT expose details
+      setServerError(result.message || "Invalid email or password. Please try again.");
     }
   };
 
+  // ─── Render ────────────────────────────────────────────────────────────
   return (
     <div className="auth-page">
       <div className="auth-card">
@@ -43,45 +75,74 @@ const Login = () => {
         <h2 className="auth-title">Welcome back</h2>
         <p className="auth-subtitle">Sign in to manage your finances</p>
 
-        {error && <div className="error-message">{error}</div>}
+        {/* Server / auth error */}
+        {serverError && (
+          <div className="error-message" role="alert">
+            {serverError}
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
+          {/* ── Email ── */}
           <div className="form-group">
-            <label className="form-label" htmlFor="email">Email</label>
+            <label className="form-label" htmlFor="login-email">
+              Email
+            </label>
             <input
-              id="email"
-              className="form-input"
+              id="login-email"
+              className={`form-input${fieldErrors.email ? " input-error" : ""}`}
               type="email"
               name="email"
               placeholder="abc@example.com"
               value={form.email}
               onChange={handleChange}
+              onBlur={handleBlur}
               autoComplete="email"
             />
+            {fieldErrors.email && (
+              <p className="field-error" role="alert">
+                {fieldErrors.email}
+              </p>
+            )}
           </div>
 
+          {/* ── Password ── */}
           <div className="form-group">
-            <label className="form-label" htmlFor="password">Password</label>
+            <label className="form-label" htmlFor="login-password">
+              Password
+            </label>
             <input
-              id="password"
-              className="form-input"
+              id="login-password"
+              className={`form-input${fieldErrors.password ? " input-error" : ""}`}
               type="password"
               name="password"
               placeholder="••••••••"
               value={form.password}
               onChange={handleChange}
+              onBlur={handleBlur}
               autoComplete="current-password"
+              maxLength={16}
             />
+            {fieldErrors.password && (
+              <p className="field-error" role="alert">
+                {fieldErrors.password}
+              </p>
+            )}
           </div>
 
-          <button className="btn btn-primary" type="submit" disabled={loading}>
-            {loading ? "Signing in..." : "Sign In"}
+          <button
+            className="btn btn-primary"
+            type="submit"
+            id="login-submit"
+            disabled={loading}
+          >
+            {loading ? "Signing in…" : "Sign In"}
           </button>
         </form>
 
         <div className="auth-footer">
-          Don't have an account?{" "}
-          <Link to="/register" className="auth-link">
+          Don&apos;t have an account?{" "}
+          <Link to="/register" className="auth-link" id="create-account-link">
             Create one
           </Link>
         </div>

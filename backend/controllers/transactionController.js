@@ -1,5 +1,12 @@
+const { validationResult } = require("express-validator");
 const transactionService = require("../services/transactionService");
 const mongoose = require("mongoose");
+
+// ─── XSS sanitiser helper ─────────────────────────────────────────────────
+const stripHtml = (str) =>
+  typeof str === "string"
+    ? str.replace(/<[^>]*>/g, "").replace(/[<>"'`]/g, "").trim()
+    : str;
 
 /**
  * @route  GET /api/transactions
@@ -71,34 +78,44 @@ const getCategoryStats = async (req, res, next) => {
  */
 const createTransaction = async (req, res, next) => {
   try {
+    // 1. Run express-validator results
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: errors.array()[0].msg,   // first error message
+        errors: errors.array(),
+      });
+    }
+
     const { type, category, amount, description, date } = req.body;
 
-    if (!type || !category || !amount) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Type, category, and amount are required" });
-    }
+    // 2. Belt-and-suspenders: sanitize description against XSS
+    const safeDescription = stripHtml(description || "");
 
-    if (!["income", "expense"].includes(type)) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Type must be income or expense" });
+    // 3. Extra numeric guard (belt + suspenders on top of validator)
+    const parsedAmount = parseFloat(amount);
+    if (!isFinite(parsedAmount) || parsedAmount <= 0) {
+      return res.status(400).json({ success: false, message: "Amount must be greater than 0" });
     }
-
-    if (amount <= 0) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Amount must be greater than 0" });
+    if (parsedAmount > 9999999.99) {
+      return res.status(400).json({ success: false, message: "Amount cannot exceed ₹9,999,999.99" });
     }
 
     const transaction = await transactionService.createTransaction(
       req.user._id,
-      { type, category, amount: parseFloat(amount), description, date }
+      {
+        type,
+        category,
+        amount: parsedAmount,
+        description: safeDescription,
+        date,
+      }
     );
 
     res.status(201).json({
       success: true,
-      message: "Transaction created successfully",
+      message: "Transaction added successfully",
       data: transaction,
     });
   } catch (error) {

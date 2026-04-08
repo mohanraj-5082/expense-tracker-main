@@ -21,7 +21,7 @@ const registerUser = async ({ name, email, password }) => {
   // Check if user already exists
   const existingUser = await User.findOne({ email: normalizedEmail });
   if (existingUser) {
-    const error = new Error("User with this email already exists");
+    const error = new Error("Email already exists");
     error.statusCode = 409;
     throw error;
   }

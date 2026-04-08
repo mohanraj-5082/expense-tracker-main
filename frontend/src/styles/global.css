@@ -581,6 +581,7 @@ textarea {
   margin-bottom: 8px;
   background: linear-gradient(135deg, var(--text-primary), var(--accent-blue));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -908,6 +909,91 @@ textarea {
   font-weight: 600;
 }
 
+/* ─── Field-level Inline Errors ──────────────────────────────── */
+.field-error {
+  font-size: 12px;
+  color: var(--accent-red);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.field-error::before {
+  content: "⚠";
+  font-size: 11px;
+}
+
+/* Input error border state */
+.form-input.input-error {
+  border-color: var(--accent-red);
+  box-shadow: 0 0 0 3px var(--accent-red-dim);
+}
+
+.form-input.input-error:focus {
+  border-color: var(--accent-red);
+  box-shadow: 0 0 0 3px var(--accent-red-dim);
+}
+
+/* Select error border state */
+.form-select.select-error {
+  border-color: var(--accent-red);
+  box-shadow: 0 0 0 3px var(--accent-red-dim);
+}
+
+.form-select.select-error:focus {
+  border-color: var(--accent-red);
+  box-shadow: 0 0 0 3px var(--accent-red-dim);
+}
+
+/* ─── Warning Banner (e.g. XSS strip notice) ─────────────────── */
+.warn-message {
+  background: rgba(245, 197, 24, 0.12);
+  border: 1px solid rgba(245, 197, 24, 0.35);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--accent-yellow);
+  margin-bottom: 16px;
+}
+
+/* ─── Character Counter ───────────────────────────────────────── */
+.desc-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.char-counter {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.char-counter.warn {
+  color: var(--accent-yellow);
+  font-weight: 600;
+}
+
+.char-counter.limit {
+  color: var(--accent-red);
+  font-weight: 700;
+}
+
+/* ─── Label Optional Helper ───────────────────────────────────── */
+.label-optional {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-left: 4px;
+}
+
 /* ─── Admin Layout ───────────────────────────────────────────── */
 .admin-layout {
   min-height: 100vh;
@@ -940,6 +1026,7 @@ textarea {
   font-weight: 700;
   background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -1178,5 +1265,200 @@ textarea {
   }
   .admin-summary {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOAST NOTIFICATIONS
+   ═══════════════════════════════════════════════════════════════ */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 500;
+  max-width: 380px;
+  z-index: 9999;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  border: 1px solid transparent;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.toast.toast-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast.toast-exit {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.toast-success {
+  background: rgba(0, 214, 143, 0.14);
+  border-color: rgba(0, 214, 143, 0.3);
+}
+
+.toast-error {
+  background: rgba(255, 94, 94, 0.14);
+  border-color: rgba(255, 94, 94, 0.3);
+}
+
+.toast-warning {
+  background: rgba(245, 197, 24, 0.14);
+  border-color: rgba(245, 197, 24, 0.3);
+}
+
+.toast-icon {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.toast-success .toast-icon {
+  background: rgba(0, 214, 143, 0.2);
+  color: var(--accent-green);
+}
+
+.toast-error .toast-icon {
+  background: rgba(255, 94, 94, 0.2);
+  color: var(--accent-red);
+}
+
+.toast-warning .toast-icon {
+  background: rgba(245, 197, 24, 0.2);
+  color: var(--accent-yellow);
+}
+
+.toast-message {
+  flex: 1;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 2px 4px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: color var(--transition);
+}
+
+.toast-close:hover {
+  color: var(--text-primary);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   AMOUNT INPUT WITH ₹ PREFIX
+   ═══════════════════════════════════════════════════════════════ */
+.amount-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.amount-prefix {
+  position: absolute;
+  left: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+}
+
+.amount-input {
+  padding-left: 28px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FIELD SUCCESS HINT
+   ═══════════════════════════════════════════════════════════════ */
+.field-success {
+  font-size: 12px;
+  color: var(--accent-green);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LABEL REQUIRED ASTERISK
+   ═══════════════════════════════════════════════════════════════ */
+.label-required {
+  color: var(--accent-red);
+  margin-left: 2px;
+  font-size: 13px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BUTTON INLINE SPINNER
+   ═══════════════════════════════════════════════════════════════ */
+.btn-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+
+.btn-loading {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TYPE TOGGLE — Enhanced active states
+   ═══════════════════════════════════════════════════════════════ */
+.type-btn.active.expense {
+  background: var(--accent-red-dim);
+  color: var(--accent-red);
+  box-shadow: inset 0 0 0 1px var(--accent-red);
+  font-weight: 700;
+}
+
+.type-btn.active.income {
+  background: var(--accent-green-dim);
+  color: var(--accent-green);
+  box-shadow: inset 0 0 0 1px var(--accent-green);
+  font-weight: 700;
+}
+
+.type-btn:not(.active):hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE — Toast on small screens
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .toast {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    max-width: none;
   }
 }

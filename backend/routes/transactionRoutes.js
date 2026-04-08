@@ -9,6 +9,7 @@ const {
   deleteTransaction,
 } = require("../controllers/transactionController");
 const { protect } = require("../middleware/authMiddleware");
+const { transactionValidator } = require("../validators/transactionValidator");
 
 // All routes are protected
 router.use(protect);
@@ -23,8 +24,8 @@ router.get("/monthly", getMonthlyStats);
 router.get("/category-stats", getCategoryStats);
 
 // @route GET  /api/transactions
-// @route POST /api/transactions
-router.route("/").get(getTransactions).post(createTransaction);
+// @route POST /api/transactions  (validated)
+router.route("/").get(getTransactions).post(transactionValidator, createTransaction);
 
 // @route DELETE /api/transactions/:id
 router.delete("/:id", deleteTransaction);
