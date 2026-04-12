@@ -2,6 +2,14 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
+// ─── Injection guard (client-side, first line of defence) ────────────────────
+const SQL_RE =
+  /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|EXEC|WHERE|HAVING|SLEEP|BENCHMARK)\b)|(-{2,}|\/\*[\s\S]*?\*\/)|'?\s*OR\s+'?\s*[\w'"]+\s*=\s*[\w'"]+/i;
+const NOSQL_RE =
+  /(\$where|\$gt|\$lt|\$gte|\$lte|\$ne|\$in|\$nin|\$or|\$and|\$regex|\$expr)/i;
+const containsInjection = (val) =>
+  typeof val === "string" && (SQL_RE.test(val) || NOSQL_RE.test(val));
+
 // ─── Validation helpers ────────────────────────────────────────────────────
 
 const validateName = (name) => {
@@ -17,6 +25,8 @@ const validateName = (name) => {
 const validateEmail = (email) => {
   const trimmed = email.trim();
   if (!trimmed) return "Email is required";
+  if (containsInjection(trimmed))
+    return "Email contains invalid characters or patterns";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed))
     return "Please provide a valid email address (e.g. abc@example.com)";
   return "";
@@ -25,12 +35,14 @@ const validateEmail = (email) => {
 const getPasswordErrors = (password) => {
   const errors = [];
   if (!password) return ["Password is required"];
+  if (containsInjection(password))
+    return ["Password contains invalid characters or patterns"];
   if (password.length < 8) errors.push("At least 8 characters");
   if (password.length > 16) errors.push("No more than 16 characters");
   if (!/[A-Z]/.test(password)) errors.push("At least one uppercase letter");
   if (!/[a-z]/.test(password)) errors.push("At least one lowercase letter");
   if (!/[0-9]/.test(password)) errors.push("At least one number");
-  if (!/[@#$%^&*!?~`\-_+=<>|\\/.,'"`;:()[\]{}]/.test(password))
+  if (!/[@#$%^&*!?~`\-_+=<>|\\/.,'"``;:()[\]{}]/.test(password))
     errors.push("At least one special character (@, #, $, %…)");
   return errors;
 };
@@ -60,7 +72,10 @@ const Register = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const updated = { ...form, [name]: value };
+    // For the name field, only allow alphabets and spaces
+    const sanitizedValue =
+      name === "name" ? value.replace(/[^a-zA-Z\s]/g, "") : value;
+    const updated = { ...form, [name]: sanitizedValue };
     setForm(updated);
     setServerError("");
 

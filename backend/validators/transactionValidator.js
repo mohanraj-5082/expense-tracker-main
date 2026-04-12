@@ -1,5 +1,20 @@
 const { body, validationResult } = require("express-validator");
 
+// ─── Injection guard (SQL + NoSQL) ────────────────────────────────────────────
+const SQL_RE =
+  /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|EXEC|EXECUTE|WHERE|HAVING|SLEEP|BENCHMARK)\b)|(-{2,}|\/\*[\s\S]*?\*\/)|(\'|\")?\s*OR\s+(\'|\")?\s*[\w\d\'"]+\s*=\s*[\w\d\'"]+/gi;
+const NOSQL_RE =
+  /(\$where|\$gt|\$lt|\$gte|\$lte|\$ne|\$in|\$nin|\$or|\$and|\$regex|\$expr)/i;
+
+const noInjection = (fieldLabel) =>
+  (value) => {
+    SQL_RE.lastIndex = 0;
+    if (SQL_RE.test(value) || NOSQL_RE.test(value)) {
+      throw new Error(`${fieldLabel} contains invalid characters or patterns`);
+    }
+    return true;
+  };
+
 // ─── Allowed Category Lists ────────────────────────────────────────────────
 const INCOME_CATEGORIES = [
   "Salary", "Freelance", "Investment", "Business", "Gift", "Other Income",
@@ -51,7 +66,8 @@ const transactionValidator = [
     .optional({ checkFalsy: true })
     .customSanitizer(stripHtml)
     .isLength({ max: 200 })
-    .withMessage("Description cannot exceed 200 characters"),
+    .withMessage("Description cannot exceed 200 characters")
+    .custom(noInjection("Description")),
 
   body("date")
     .notEmpty()

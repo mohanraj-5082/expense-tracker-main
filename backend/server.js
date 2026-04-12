@@ -7,6 +7,7 @@ const authRoutes = require("./routes/authRoutes");
 const transactionRoutes = require("./routes/transactionRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const { errorHandler, notFound } = require("./middleware/errorMiddleware");
+const { sanitizeRequest } = require("./middleware/sanitizeMiddleware");
 
 // Connect to MongoDB
 connectDB();
@@ -34,6 +35,9 @@ app.use(
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// ─── Injection Protection (runs on every route) ───────────────────────────
+app.use(sanitizeRequest);
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));

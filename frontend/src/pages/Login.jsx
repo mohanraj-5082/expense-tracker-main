@@ -2,10 +2,20 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
+// ─── Injection guard (client-side, first line of defence) ────────────────────
+const SQL_RE =
+  /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|EXEC|WHERE|HAVING|SLEEP|BENCHMARK)\b)|(-{2,}|\/\*[\s\S]*?\*\/)|'?\s*OR\s+'?\s*[\w'"]+\s*=\s*[\w'"]+/i;
+const NOSQL_RE =
+  /(\$where|\$gt|\$lt|\$gte|\$lte|\$ne|\$in|\$nin|\$or|\$and|\$regex|\$expr)/i;
+const containsInjection = (val) =>
+  typeof val === "string" && (SQL_RE.test(val) || NOSQL_RE.test(val));
+
 // ─── Validation helpers ────────────────────────────────────────────────────
 const validateEmail = (email) => {
   const trimmed = email.trim();
   if (!trimmed) return "Email is required";
+  if (containsInjection(trimmed))
+    return "Email contains invalid characters or patterns";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed))
     return "Please enter a valid email address (e.g. abc@example.com)";
   return "";
@@ -13,6 +23,8 @@ const validateEmail = (email) => {
 
 const validatePassword = (password) => {
   if (!password) return "Password is required";
+  if (containsInjection(password))
+    return "Password contains invalid characters or patterns";
   return "";
 };
 
