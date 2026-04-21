@@ -20,10 +20,13 @@ axiosClient.interceptors.request.use(
 );
 
 // Response interceptor — handle 401
+// Skip the redirect if the 401 came from the login endpoint itself
+// (wrong credentials), so the Login page can display the error message.
 axiosClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const isLoginEndpoint = error.config?.url?.includes("/auth/login");
+    if (error.response?.status === 401 && !isLoginEndpoint) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       window.location.href = "/login";
